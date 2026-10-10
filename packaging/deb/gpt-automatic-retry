@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+config_root="${XDG_CONFIG_HOME:-$HOME/.config}/gpt-automatic-retry"
+state_root="${XDG_STATE_HOME:-$HOME/.local/state}/gpt-automatic-retry"
+mkdir -p "$config_root" "$state_root"
+export GPT_KEEPALIVE_STATE_DIR="$state_root"
+
+exec /usr/bin/python3 /usr/lib/gpt-automatic-retry/gpt_keepalive.py \
+  --config "$config_root/config.json" "$@"

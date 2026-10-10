@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=GPT Automatic Retry
+Name[zh_CN]=GPT 自动重试
+Comment=Resume interrupted ChatGPT conversations after a configurable delay
+Comment[zh_CN]=在设定时间后自动续接中断的 ChatGPT 对话
+Exec=gpt-automatic-retry-gui
+Icon=gpt-automatic-retry
+Terminal=false
+Categories=Utility;
+Keywords=ChatGPT;retry;timer;automation;
+StartupNotify=true

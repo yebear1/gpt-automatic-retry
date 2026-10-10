@@ -1,0 +1,13 @@
+[Unit]
+Description=GPT Automatic Retry
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/gpt-automatic-retry run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

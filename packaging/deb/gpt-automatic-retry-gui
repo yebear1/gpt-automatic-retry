@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+state_root="${XDG_STATE_HOME:-$HOME/.local/state}/gpt-automatic-retry"
+mkdir -p "$state_root"
+export GPT_KEEPALIVE_STATE_DIR="$state_root"
+
+exec /usr/bin/python3 /usr/lib/gpt-automatic-retry/gpt_keepalive_gui.py "$@"

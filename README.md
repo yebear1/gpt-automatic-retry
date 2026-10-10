@@ -4,6 +4,9 @@
 
 时间一到自动向 ChatGPT 发送「继续」消息；启用 OCR 后还可以自动识别新的限额提示并开始计时。
 
+项目同时提供命令行版本和 Ubuntu/Debian `.deb` 桌面软件。桌面版包含图形界面、应用菜单入口和
+systemd 用户服务。
+
 ## 原理：倒计时从哪里来
 
 ChatGPT 的功能和用量限制会随套餐、平台、地区、灰度发布和工作区设置变化；ChatGPT Work 与 Codex
@@ -76,7 +79,33 @@ sudo apt install wtype                    # 输入（推荐，支持中文）
 # 兜底方案: sudo apt install ydotool wl-clipboard  (需启动 ydotool 守护进程)
 ```
 
-### 2. 检查并运行
+### 2. 安装桌面软件（Ubuntu/Debian 推荐）
+
+下载或自行构建 `dist/gpt-automatic-retry_1.1.0_all.deb`，然后在终端执行：
+
+```
+sudo apt install ./dist/gpt-automatic-retry_1.1.0_all.deb
+```
+
+安装完成后，从应用菜单打开 **GPT 自动重试**。在界面中填写重置时刻或剩余时长，设置续接消息，
+然后点击“按时刻重置”或“按时长重置”。默认会同时启动后台服务。
+
+也可以继续使用命令行：
+
+```
+gpt-automatic-retry check
+gpt-automatic-retry reset --until 21:30
+gpt-automatic-retry status
+```
+
+卸载：
+
+```
+systemctl --user disable --now gpt-automatic-retry.service
+sudo apt remove gpt-automatic-retry
+```
+
+### 3. 从源码运行
 
 本目录没有安装脚本，直接运行即可：
 
@@ -86,7 +115,7 @@ python3 gpt_keepalive.py check    # 先确认能识别到窗口
 python3 gpt_keepalive.py run      # 前台运行（Ctrl+C 退出）
 ```
 
-需要 systemd 用户服务时，创建 `~/.config/systemd/user/gpt-keepalive.service`：
+从源码运行且需要 systemd 用户服务时，创建 `~/.config/systemd/user/gpt-keepalive.service`：
 
 ```ini
 [Unit]
@@ -111,7 +140,7 @@ systemctl --user enable --now gpt-keepalive.service
 journalctl --user -u gpt-keepalive.service -f
 ```
 
-### 3. 日常使用
+### 4. 日常使用
 
 
 
@@ -141,6 +170,9 @@ python3 gpt_keepalive.py status                 # 看剩余时间/窗口状态
 ```
 
 ## 配置（config.json）
+
+`.deb` 安装版的用户配置位于 `~/.config/gpt-automatic-retry/config.json`，状态和日志位于
+`~/.local/state/gpt-automatic-retry/`。源码直接运行时，默认仍使用脚本目录。
 
 
 
@@ -219,6 +251,23 @@ tail -f gpt-keepalive.log               # 查看守护进程日志
 ```
 
 `--dry-run` 确认窗口识别、聚焦、消息内容都正确后，再正式 `run`。
+
+## 构建 Debian 安装包
+
+在 Ubuntu/Debian 上执行：
+
+```
+chmod +x packaging/deb/build-deb.sh
+./packaging/deb/build-deb.sh
+```
+
+安装包将生成到 `dist/`。可以用以下命令检查内容和元数据：
+
+```
+dpkg-deb --info dist/gpt-automatic-retry_1.1.0_all.deb
+dpkg-deb --contents dist/gpt-automatic-retry_1.1.0_all.deb
+desktop-file-validate packaging/deb/gpt-automatic-retry.desktop
+```
 
 ## 常见问题
 

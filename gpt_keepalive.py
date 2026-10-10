@@ -144,10 +144,15 @@ def load_config(path):
     except Exception as e:
         print("读取配置 %s 失败：%s，使用默认配置。" % (path, e), file=sys.stderr)
     cfg["_config_path"] = os.path.abspath(path)
+    runtime_dir = os.environ.get("GPT_KEEPALIVE_STATE_DIR", SCRIPT_DIR)
+    try:
+        os.makedirs(runtime_dir, exist_ok=True)
+    except OSError:
+        pass
     if not cfg.get("log_file"):
-        cfg["log_file"] = os.path.join(SCRIPT_DIR, "gpt-keepalive.log")
+        cfg["log_file"] = os.path.join(runtime_dir, "gpt-keepalive.log")
     if not cfg.get("state_file"):
-        cfg["state_file"] = os.path.join(SCRIPT_DIR, "gpt-keepalive.state.json")
+        cfg["state_file"] = os.path.join(runtime_dir, "gpt-keepalive.state.json")
     return cfg
 
 
@@ -355,6 +360,9 @@ def resolve_backends(cfg):
                 wb = "hyprland"
             elif cfg["custom_window_check"]:
                 wb = "custom"
+            elif os.environ.get("DISPLAY") and (tool_available("wmctrl") or tool_available("xdotool")):
+                # Wayland 会话中的 XWayland 窗口仍可能由 X11 工具控制。
+                wb = "x11"
             else:
                 wb = "none"
         else:
