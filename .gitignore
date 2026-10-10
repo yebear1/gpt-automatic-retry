@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local runtime data and machine-specific settings
+config.json
+*.log
+*.state.json
